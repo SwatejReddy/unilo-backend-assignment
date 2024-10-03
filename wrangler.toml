@@ -1,0 +1,23 @@
+name = "unilo-event-manager"
+main = "src/index.ts"
+compatibility_date = "2024-10-03"
+compatibility_flags = [ "nodejs_compat" ]
+
+[vars]
+DATABASE_URL = "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNzZiNjAzODItZDc2ZS00Y2EzLWEyYjctYjJkOGVjOGY4ZWM5IiwidGVuYW50X2lkIjoiOGJmNTc1NDE1MWY4OTkxNmRmMGIwOWVlZDQ5ZmY0M2FlMzM1ODFjYWEzNTY3ODUwMWIwZjk1YjJlNmUxM2Y3ZSIsImludGVybmFsX3NlY3JldCI6ImY4MDAzNTljLWU4YTMtNDcwNy1iZDhlLTQxYjFjZjc5NTg3NCJ9.O5DJUGZnSQVVIOXtXWSu3Z3k9m3A8_lgYLpt5aLfsIE"
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = ""
+
+# [ai]
+# binding = "AI"

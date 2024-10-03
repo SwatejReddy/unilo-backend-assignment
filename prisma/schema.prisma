@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  salt      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  date            DateTime
+  location        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deleted         Boolean  @default(false)
+  maxParticipants Int
+
+  // Relations
+  participants ConfirmedList[]
+  WaitList     WaitList[]
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+  name      String
+  username  String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+
+  // Relations
+  events   ConfirmedList[]
+  WaitList WaitList[]
+}
+
+model ConfirmedList {
+  id            String   @id @default(cuid())
+  eventId       String
+  participantId String
+  cancelled     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  Participant Participant @relation(fields: [participantId], references: [id])
+  Event       Event       @relation(fields: [eventId], references: [id])
+}
+
+model WaitList {
+  id            String   @id @default(cuid())
+  eventId       String
+  participantId String
+  cancelled     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  Participant Participant @relation(fields: [participantId], references: [id])
+  Event       Event       @relation(fields: [eventId], references: [id])
+}
