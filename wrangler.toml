@@ -5,6 +5,7 @@ compatibility_flags = [ "nodejs_compat" ]
 
 [vars]
 DATABASE_URL = "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNzZiNjAzODItZDc2ZS00Y2EzLWEyYjctYjJkOGVjOGY4ZWM5IiwidGVuYW50X2lkIjoiOGJmNTc1NDE1MWY4OTkxNmRmMGIwOWVlZDQ5ZmY0M2FlMzM1ODFjYWEzNTY3ODUwMWIwZjk1YjJlNmUxM2Y3ZSIsImludGVybmFsX3NlY3JldCI6ImY4MDAzNTljLWU4YTMtNDcwNy1iZDhlLTQxYjFjZjc5NTg3NCJ9.O5DJUGZnSQVVIOXtXWSu3Z3k9m3A8_lgYLpt5aLfsIE"
+SECRET_KEY = "unilo-assignment-secret-key"
 
 # [[kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"

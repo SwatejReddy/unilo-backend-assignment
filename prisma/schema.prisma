@@ -8,16 +8,23 @@ datasource db {
 }
 
 model Admin {
-  id        String   @id @default(cuid())
+  // auto increment id
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
   username  String   @unique
   password  String
   salt      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  Event Event[]
 }
 
 model Event {
-  id              String   @id @default(cuid())
+  id              Int      @id @default(autoincrement())
+  adminId         Int
   title           String
   description     String
   date            DateTime
@@ -30,13 +37,16 @@ model Event {
   // Relations
   participants ConfirmedList[]
   WaitList     WaitList[]
+  Admin        Admin           @relation(fields: [adminId], references: [id])
 }
 
 model Participant {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   name      String
   username  String   @unique
   email     String   @unique
+  password  String
+  salt      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -47,9 +57,9 @@ model Participant {
 }
 
 model ConfirmedList {
-  id            String   @id @default(cuid())
-  eventId       String
-  participantId String
+  id            Int      @id @default(autoincrement())
+  eventId       Int
+  participantId Int
   cancelled     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -61,8 +71,8 @@ model ConfirmedList {
 
 model WaitList {
   id            String   @id @default(cuid())
-  eventId       String
-  participantId String
+  eventId       Int
+  participantId Int
   cancelled     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
