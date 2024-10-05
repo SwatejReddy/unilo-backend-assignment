@@ -7,8 +7,8 @@
 
 
 ## Participant routes:
-[] - `/participant/` - Can join an event by event id
-[] - `/participant/` - Can cancel participation.
+[] - `/participant/event/register/:id` - Can join an event by event id
+[] - `/participant/event/cancel-registration/:id` - Can cancel participation.
 
 ## Event routes:
 [] - `/event/details/:id` - Gives confirmed list, waitlist and basic details of an event.

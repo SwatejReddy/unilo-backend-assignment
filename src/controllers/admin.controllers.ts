@@ -12,6 +12,7 @@ export const createEvent = async (c: Context) => {
         }).$extends(withAccelerate());
 
         // get the request body and validate it
+        const adminId = c.get('userId');
         const body = await c.req.json();
         body.date = new Date(body.date);
         const dataIsValid = addEventInput.safeParse(body);
@@ -32,7 +33,7 @@ export const createEvent = async (c: Context) => {
                 date: dataIsValid.data.date,
                 location: dataIsValid.data.location,
                 maxParticipants: dataIsValid.data.maxParticipants,
-                adminId: c.get('userId')
+                adminId: adminId
             }
         })
 
@@ -50,11 +51,14 @@ export const createEvent = async (c: Context) => {
 
 export const updateEvent = async (c: Context) => {
     try {
+        const eventId = c.req.param('id');
+        const adminId = c.get('userId');
         const body = await c.req.json();
-        const id = c.req.param('id');
+
         body.date = new Date(body.date);
         const dataIsValid = addEventInput.safeParse(body);
 
+        // if the data is not valid, return an error response
         if (!dataIsValid.success) {
             return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
         }
@@ -67,10 +71,33 @@ export const updateEvent = async (c: Context) => {
             return c.json(new ApiResponse(500, {}, "Couldn't connect to the database"), 500);
         }
 
-        // only if deleted is false:
+        // check if the event exists
+        const eventExists = await prisma.event.findFirst({
+            where: {
+                id: Number(eventId)
+            }
+        })
+
+        // if the event doesn't exist, return an error response
+        if (!eventExists) {
+            return c.json(new ApiResponse(404, {}, "Event not found"), 404);
+        }
+
+        // if the event exists but the adminId is different, return an error response
+        if (eventExists.adminId !== adminId) {
+            return c.json(new ApiResponse(403, {}, "You are not authorized to update this event"), 403);
+        }
+
+        // if the event is deleted, return an error response
+        if (eventExists.deleted) {
+            return c.json(new ApiResponse(404, {}, "Can't update the event as it no longer exists"), 404);
+        }
+
+        // update the event
         const event = await prisma.event.update({
             where: {
-                id: Number(id),
+                id: Number(eventId),
+                adminId: adminId,
                 deleted: false
             },
             data: {
@@ -82,15 +109,8 @@ export const updateEvent = async (c: Context) => {
             }
         })
 
-        console.log("Eevent: ", event);
-
         return c.json(new ApiResponse(200, { event }, "Event updated successfully"), 200);
     } catch (error: any) {
-
-        if (error.code === 'P2025') {
-            return c.json(new ApiResponse(404, {}, "Can't update the event as it no longer exists"), 404);
-        }
-
         return c.json(new ApiResponse(500, {}, "Couldn't update the event"), 500);
     }
 }
