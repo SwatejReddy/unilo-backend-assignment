@@ -95,7 +95,7 @@ export const adminLogin = async (c: Context) => {
             return c.json(new ApiResponse(401, {}, "Invalid Credentials"), 401);
         }
 
-        const token = await generateJwtToken(c, { id: admin.id, username: admin.username, email: admin.email, role: "admin" });
+        const token = await generateJwtToken(c, { userId: admin.id, username: admin.username, email: admin.email, role: "admin" });
 
         setCookie(c, 'jwt', token, {
             httpOnly: true,
@@ -201,7 +201,7 @@ export const participantLogin = async (c: Context) => {
             return c.json(new ApiResponse(401, {}, "Invalid Credentials"), 401);
         }
 
-        const token = await generateJwtToken(c, { id: participant.id, username: participant.username, email: participant.email, role: "participant" });
+        const token = await generateJwtToken(c, { userId: participant.id, username: participant.username, email: participant.email, role: "participant" });
 
         setCookie(c, 'jwt', token, {
             httpOnly: true,

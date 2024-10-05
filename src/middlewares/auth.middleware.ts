@@ -8,7 +8,6 @@ import { Role } from "../schemas/types";
 
 const authenticateUser = async (c: Context, requiredRole?: Role) => {
     const jwt = getCookie(c, 'jwt');
-    console.log("Cookie: ", jwt);
 
     if (!jwt) {
         return new ApiResponse(401, { message: 'Unauthorized' }, "Please login first");
@@ -42,7 +41,6 @@ export const loginCheck = async (c: Context, next: Next) => {
 
 export const adminAccessCheck = async (c: Context, next: Next) => {
     const result = await authenticateUser(c, 'admin');
-
     // if not logged in or incorrect jwt token return 401
     if (result instanceof ApiResponse) {
         return c.json(result, 401);

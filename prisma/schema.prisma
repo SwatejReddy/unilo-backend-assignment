@@ -29,10 +29,11 @@ model Event {
   description     String
   date            DateTime
   location        String
+  maxParticipants Int
+  confirmedCount  Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   deleted         Boolean  @default(false)
-  maxParticipants Int
 
   // Relations
   participants ConfirmedList[]
