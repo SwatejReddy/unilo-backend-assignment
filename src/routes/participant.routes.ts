@@ -1,6 +1,6 @@
 import { Hono } from "hono"
 import { participantAccessCheck } from "../middlewares/auth.middleware"
-import { joinEvent } from "../controllers/participant.controllers"
+import { cancelEventRegistration, joinEvent } from "../controllers/participant.controllers"
 
 export const participantRouter = new Hono<{
     Bindings: {
@@ -10,3 +10,4 @@ export const participantRouter = new Hono<{
 }>()
 
 participantRouter.use('/event/register/:id').post(participantAccessCheck, joinEvent)
+participantRouter.use('/event/cancel-registration/:id').post(participantAccessCheck, cancelEventRegistration)
