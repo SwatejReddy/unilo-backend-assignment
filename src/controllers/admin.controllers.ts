@@ -3,13 +3,15 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { Context } from "hono";
 import { addEventInput } from "../schemas/zodSchemas";
 import ApiResponse from "../utils/ApiResponse";
+import { initPrismaClient } from "../utils/prisma";
+import { ApiError } from "../errors/ApiError";
+import { handleError } from "../errors/ErrorHandler";
+import { EventError } from "../errors/EventError";
 
 export const createEvent = async (c: Context) => {
     try {
         // initiate a prisma client
-        const prisma = new PrismaClient({
-            datasourceUrl: c.env.DATABASE_URL
-        }).$extends(withAccelerate());
+        const prisma = initPrismaClient(c);
 
         // get the request body and validate it
         const adminId = c.get('userId');
@@ -17,15 +19,10 @@ export const createEvent = async (c: Context) => {
         body.date = new Date(body.date);
         const dataIsValid = addEventInput.safeParse(body);
 
-        console.log(dataIsValid);
-
         // if the data is not valid, return an error response
-        if (!dataIsValid.success) {
-            return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
-        }
+        if (!dataIsValid.success) throw ApiError.validationFailed("Invalid Inputs", dataIsValid.error.errors);
 
-        // create event 
-
+        // create new event 
         const event = await prisma.event.create({
             data: {
                 title: dataIsValid.data.title,
@@ -37,15 +34,13 @@ export const createEvent = async (c: Context) => {
             }
         })
 
-        if (!event) {
-            return c.json(new ApiResponse(500, {}, "Couldn't create the event"), 500);
-        }
+        if (!event) throw EventError.failedToCreateEvent();
 
         // return the event
         return c.json(new ApiResponse(200, { event }, "Event created successfully"), 200);
 
-    } catch (error) {
-        return c.json(new ApiResponse(500, {}, "Couldn't create the event"), 500);
+    } catch (error: any) {
+        return handleError(c, error);
     }
 }
 
@@ -60,16 +55,12 @@ export const updateEvent = async (c: Context) => {
 
         // if the data is not valid, return an error response
         if (!dataIsValid.success) {
-            return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
+            throw ApiError.validationFailed("Invalid Inputs", dataIsValid.error.errors);
         }
 
-        const prisma = new PrismaClient({
-            datasourceUrl: c.env.DATABASE_URL
-        }).$extends(withAccelerate());
-
-        if (!prisma) {
-            return c.json(new ApiResponse(500, {}, "Couldn't connect to the database"), 500);
-        }
+        // initiate a prisma client
+        const prisma = initPrismaClient(c);
+        if (!prisma) throw ApiError.databaseConnectionError();
 
         // check if the event exists
         const eventExists = await prisma.event.findFirst({
@@ -79,19 +70,13 @@ export const updateEvent = async (c: Context) => {
         })
 
         // if the event doesn't exist, return an error response
-        if (!eventExists) {
-            return c.json(new ApiResponse(404, {}, "Event not found"), 404);
-        }
+        if (!eventExists) throw EventError.eventNotFound();
 
         // if the event exists but the adminId is different, return an error response
-        if (eventExists.adminId !== adminId) {
-            return c.json(new ApiResponse(403, {}, "You are not authorized to update this event"), 403);
-        }
+        if (eventExists.adminId !== adminId) throw ApiError.unauthorized();
 
         // if the event is deleted, return an error response
-        if (eventExists.deleted) {
-            return c.json(new ApiResponse(404, {}, "Can't update the event as it no longer exists"), 404);
-        }
+        if (eventExists.deleted) throw EventError.eventNotFound();
 
         // update the event
         const event = await prisma.event.update({
@@ -111,6 +96,6 @@ export const updateEvent = async (c: Context) => {
 
         return c.json(new ApiResponse(200, { event }, "Event updated successfully"), 200);
     } catch (error: any) {
-        return c.json(new ApiResponse(500, {}, "Couldn't update the event"), 500);
+        return handleError(c, error);
     }
 }

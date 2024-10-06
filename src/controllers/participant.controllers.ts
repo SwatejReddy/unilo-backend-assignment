@@ -1,7 +1,8 @@
 import { Context } from "hono";
 import ApiResponse from "../utils/ApiResponse";
 import { initPrismaClient } from "../utils/prisma";
-import { EventError, handleEventError } from "../errors/EventErrors";
+import { EventError } from "../errors/EventError";
+import { handleError } from "../errors/ErrorHandler";
 
 
 export const joinEvent = async (c: Context) => {
@@ -19,15 +20,11 @@ export const joinEvent = async (c: Context) => {
         })
 
         // if the event doesn't exist, return an error response
-        if (!event) {
-            throw EventError.eventNotFound();
-        }
+        if (!event) throw EventError.eventNotFound();
 
         const userInList = await isParticipantRegistered(prisma, event.id, participantId);
 
-        if (userInList) {
-            throw EventError.alreadyRegistered(userInList as "confirmed" | "waitlist");
-        }
+        if (userInList) throw EventError.alreadyRegistered(userInList as "confirmed" | "waitlist");
 
         let responseMessage;
 
@@ -72,7 +69,7 @@ export const joinEvent = async (c: Context) => {
 
         return c.json(new ApiResponse(200, {}, responseMessage), 200);
     } catch (error: any) {
-        return handleEventError(c, error);
+        return handleError(c, error);
     }
 }
 
@@ -89,15 +86,11 @@ export const cancelEventRegistration = async (c: Context) => {
             }
         })
 
-        if (!event) {
-            throw EventError.eventNotFound();
-        }
+        if (!event) throw EventError.eventNotFound();
 
         const userInList = await isParticipantRegistered(prisma, event.id, participantId);
 
-        if (!userInList) {
-            throw EventError.notRegistered();
-        }
+        if (!userInList) throw EventError.notRegistered();
 
         // check if the user is in the confirmed list or waitlist
         if (userInList == IN_CONFIRMED_LIST) {
@@ -107,9 +100,7 @@ export const cancelEventRegistration = async (c: Context) => {
                     where: { eventId: Number(eventId), participantId: Number(participantId), cancelled: false }
                 });
 
-                if (!confirmedParticipant) {
-                    throw EventError.notRegistered();
-                }
+                if (!confirmedParticipant) throw EventError.notRegistered();
 
                 await prisma.confirmedList.updateMany({
                     where: {
@@ -157,9 +148,7 @@ export const cancelEventRegistration = async (c: Context) => {
                 });
 
                 // if the user is not in the waitlist, return an error response
-                if (!waitlistParticipant) {
-                    throw EventError.notRegistered();
-                }
+                if (!waitlistParticipant) throw EventError.notRegistered();
 
                 // remove the participant from the waitlist
                 await prisma.waitList.updateMany({
@@ -173,7 +162,7 @@ export const cancelEventRegistration = async (c: Context) => {
             return c.json(new ApiResponse(200, {}, "Your registration from the waitlist has been cancelled successfully"), 200);
         }
     } catch (error: any) {
-        return handleEventError(c, error);
+        return handleError(c, error);
     }
 }
 

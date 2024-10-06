@@ -7,20 +7,20 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { generateJwtToken } from "../utils/jwt";
 import { setCookie } from "hono/cookie";
+import { initPrismaClient } from "../utils/prisma";
+import { ApiError } from "../errors/ApiError";
+import { UserAuthError } from "../errors/UserAuthError";
+import { handleError } from "../errors/ErrorHandler";
+import { use } from "hono/jsx";
 
 export const adminSignup = async (c: Context) => {
     try {
-        const prisma = new PrismaClient({
-            datasourceUrl: c.env.DATABASE_URL
-        }).$extends(withAccelerate());
-
+        const prisma = initPrismaClient(c);
         const body = await c.req.json();
         const dataIsValid = adminSignupInput.safeParse(body);
 
         // if the data is not valid, return an error response
-        if (!dataIsValid.success) {
-            return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
-        }
+        if (!dataIsValid.success) throw ApiError.validationFailed("Invalid Inputs", dataIsValid.error.errors);
 
         // create a salt
         const salt = generateSalt();
@@ -39,9 +39,7 @@ export const adminSignup = async (c: Context) => {
         })
 
         // if the admin already exists, return an error response
-        if (adminExists) {
-            return c.json(new ApiResponse(400, {}, "Admin already exists"), 400);
-        }
+        if (adminExists) throw UserAuthError.userExists('admin');
 
         // if admin doesn't exist, create the admin
         const admin = await prisma.admin.create({
@@ -54,13 +52,11 @@ export const adminSignup = async (c: Context) => {
             }
         })
 
-        if (!admin) {
-            return c.json(new ApiResponse(500, {}, "An error occurred while creating the admin"), 500);
-        }
+        if (!admin) throw UserAuthError.cannotCreateUser('admin');
 
         return c.json(new ApiResponse(200, {}, "Admin Signup Successful"), 200);
-    } catch (error) {
-        return c.json(new ApiResponse(500, {}, "An error occurred while creating the admin"), 500);
+    } catch (error: any) {
+        return handleError(c, error);
     }
 }
 
@@ -68,16 +64,12 @@ export const adminLogin = async (c: Context) => {
     try {
         console.log("c.env.DATABASE_URL: ", c.env.DATABASE_URL);
         console.log("c.env.SECRET_KEY: ", c.env.SECRET_KEY);
-        const prisma = new PrismaClient({
-            datasourceUrl: c.env.DATABASE_URL
-        }).$extends(withAccelerate());
+        const prisma = initPrismaClient(c);
 
         const body = await c.req.json();
         const dataIsValid = loginInput.safeParse(body);
 
-        if (!dataIsValid.success) {
-            return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
-        }
+        if (!dataIsValid.success) throw ApiError.validationFailed("Invalid Inputs", dataIsValid.error.errors);
 
         const admin = await prisma.admin.findFirst({
             where: {
@@ -85,15 +77,11 @@ export const adminLogin = async (c: Context) => {
             }
         })
 
-        if (!admin) {
-            return c.json(new ApiResponse(404, {}, "Admin not found"), 404);
-        }
+        if (!admin) throw UserAuthError.userNotFound('admin');
 
         const passwordIsValid = await verifyPassword(dataIsValid.data.password, admin.password, admin.salt);
 
-        if (!passwordIsValid) {
-            return c.json(new ApiResponse(401, {}, "Invalid Credentials"), 401);
-        }
+        if (!passwordIsValid) throw UserAuthError.invalidCredentials();
 
         const token = await generateJwtToken(c, { userId: admin.id, username: admin.username, email: admin.email, role: "admin" });
 
@@ -105,8 +93,8 @@ export const adminLogin = async (c: Context) => {
 
         return c.json(new ApiResponse(200, { token, admin }, "Admin Login Successful"), 200);
 
-    } catch (error) {
-        return c.json(new ApiResponse(500, {}, "An error occurred while logging in"), 500);
+    } catch (error: any) {
+        return handleError(c, error);
     }
 }
 
@@ -120,9 +108,7 @@ export const participantSignup = async (c: Context) => {
         const dataIsValid = participantSignupInput.safeParse(body);
 
         // if the data is not valid, return an error response
-        if (!dataIsValid.success) {
-            return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
-        }
+        if (!dataIsValid.success) throw ApiError.validationFailed("Invalid Inputs", dataIsValid.error.errors);
 
         // create a salt
         const salt = generateSalt();
@@ -141,9 +127,7 @@ export const participantSignup = async (c: Context) => {
         })
 
         // if the admin already exists, return an error response
-        if (participantExists) {
-            return c.json(new ApiResponse(400, {}, "Participant already exists"), 400);
-        }
+        if (participantExists) throw UserAuthError.userExists('participant');
 
         // if admin doesn't exist, create the admin
         const participant = await prisma.participant.create({
@@ -162,44 +146,32 @@ export const participantSignup = async (c: Context) => {
             }
         })
 
-        if (!participant) {
-            return c.json(new ApiResponse(500, {}, "An error occurred while creating the participant"), 500);
-        }
+        if (!participant) throw UserAuthError.cannotCreateUser('participant');
 
         return c.json(new ApiResponse(200, { participant }, "Participant Signup Successful"), 200);
-    } catch (error) {
-        return c.json(new ApiResponse(500, {}, "An error occurred while creating the participant"), 500);
+    } catch (error: any) {
+        return handleError(c, error);
     }
 }
 
 export const participantLogin = async (c: Context) => {
     try {
-        const prisma = new PrismaClient({
-            datasourceUrl: c.env.DATABASE_URL
-        }).$extends(withAccelerate());
-
+        const prisma = initPrismaClient(c);
         const body = await c.req.json();
         const dataIsValid = loginInput.safeParse(body);
 
-        if (!dataIsValid.success) {
-            return c.json(new ApiResponse(400, { errors: dataIsValid.error.errors }, "Invalid Inputs"), 400);
-        }
+        if (!dataIsValid.success) throw ApiError.validationFailed("Invalid Inputs", dataIsValid.error.errors);
 
         const participant = await prisma.participant.findFirst({
             where: {
                 username: dataIsValid.data.username
             }
         })
-
-        if (!participant) {
-            return c.json(new ApiResponse(404, {}, "Participant not found"), 404);
-        }
+        if (!participant) throw UserAuthError.userNotFound('participant');
 
         const passwordIsValid = await verifyPassword(dataIsValid.data.password, participant.password, participant.salt);
 
-        if (!passwordIsValid) {
-            return c.json(new ApiResponse(401, {}, "Invalid Credentials"), 401);
-        }
+        if (!passwordIsValid) throw UserAuthError.invalidCredentials();
 
         const token = await generateJwtToken(c, { userId: participant.id, username: participant.username, email: participant.email, role: "participant" });
 
@@ -210,8 +182,8 @@ export const participantLogin = async (c: Context) => {
         });
 
         return c.json(new ApiResponse(200, { token, participant }, "Login Successful"), 200);
-    } catch (error) {
-        return c.json(new ApiResponse(500, {}, "An error occurred while logging in"), 500);
+    } catch (error: any) {
+        return handleError(c, error);
     }
 }
 
@@ -223,5 +195,5 @@ export const logout = async (c: Context) => {
         sameSite: 'strict',
         expires: new Date(0)
     });
-    return c.json(new ApiResponse(200, {}, "Participant logout Successful"), 200);
+    return c.json(new ApiResponse(200, {}, "Logout Successful"), 200);
 }
