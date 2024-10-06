@@ -8,7 +8,6 @@ datasource db {
 }
 
 model Admin {
-  // auto increment id
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
@@ -19,7 +18,7 @@ model Admin {
   updatedAt DateTime @updatedAt
 
   // Relations
-  Event Event[]
+  events Event[]
 }
 
 model Event {
@@ -36,9 +35,9 @@ model Event {
   deleted         Boolean  @default(false)
 
   // Relations
-  participants ConfirmedList[]
-  WaitList     WaitList[]
-  Admin        Admin           @relation(fields: [adminId], references: [id])
+  confirmedList ConfirmedList[]
+  waitList      WaitList[]
+  admin         Admin           @relation(fields: [adminId], references: [id])
 }
 
 model Participant {
@@ -53,8 +52,8 @@ model Participant {
   deleted   Boolean  @default(false)
 
   // Relations
-  events   ConfirmedList[]
-  WaitList WaitList[]
+  confirmedList ConfirmedList[]
+  waitList      WaitList[]
 }
 
 model ConfirmedList {
@@ -66,8 +65,8 @@ model ConfirmedList {
   updatedAt     DateTime @updatedAt
 
   // Relations
-  Participant Participant @relation(fields: [participantId], references: [id])
-  Event       Event       @relation(fields: [eventId], references: [id])
+  participant Participant @relation(fields: [participantId], references: [id])
+  event       Event       @relation(fields: [eventId], references: [id])
 }
 
 model WaitList {
@@ -79,6 +78,6 @@ model WaitList {
   updatedAt     DateTime @updatedAt
 
   // Relations
-  Participant Participant @relation(fields: [participantId], references: [id])
-  Event       Event       @relation(fields: [eventId], references: [id])
+  participant Participant @relation(fields: [participantId], references: [id])
+  event       Event       @relation(fields: [eventId], references: [id])
 }

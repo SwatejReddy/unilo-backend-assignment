@@ -28,6 +28,18 @@ export class EventError extends Error {
         return new EventError(400, "You are not registered for this event", { code: "NOT_REGISTERED" });
     }
 
+    static failedToFetchList() {
+        return new EventError(500, "Failed to fetch the confirmed and wait list", { code: "FAILED_TO_FETCH" });
+    }
+
+    static noParticipants() {
+        return new EventError(404, "No participants found", { code: "NO_PARTICIPANTS" });
+    }
+
+    static noWaitlist() {
+        return new EventError(404, "No waitlist found", { code: "NO_WAITLIST" });
+    }
+
     static unexpectedError() {
         return new EventError(500, "An unexpected error occurred", { code: "UNEXPECTED_ERROR" });
     }

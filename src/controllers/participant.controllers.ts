@@ -64,7 +64,7 @@ export const joinEvent = async (c: Context) => {
                 return { eventRegistration };
             });
 
-            responseMessage = "Added to the waitlist.";
+            responseMessage = "Confirmed list is full. Added to the waitlist.";
         }
 
         return c.json(new ApiResponse(200, {}, responseMessage), 200);
