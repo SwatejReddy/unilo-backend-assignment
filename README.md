@@ -10,12 +10,30 @@ https://excalidraw.com/#json=guX0UwGn2mw9ONnoPRCka,3UUFOP5Jc4fAxe11WufYvA
 
 Base URL: `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1`
 
-## Admin Endpoints
+# Event Management API Documentation
+
+## Table of Contents
+1. [Authentication](#authentication)
+   - [Admin Signup](#admin-signup)
+   - [Admin Login](#admin-login)
+   - [Participant Signup](#participant-signup)
+   - [Participant Login](#participant-login)
+   - [Logout](#logout)
+2. [Event Management](#event-management)
+   - [Create Event](#create-event)
+   - [Update Event](#update-event)
+3. [Event Participation](#event-participation)
+   - [Join Event](#join-event)
+   - [Cancel Event Registration](#cancel-event-registration)
+4. [Event Information](#event-information)
+   - [Get Confirmed and Waitlist](#get-confirmed-and-waitlist)
+
+## Authentication
 
 ### Admin Signup
 Creates a new admin account.
 
-- **API:** `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1/auth/admin/signup`
+- **URL:** `/auth/admin/signup`
 - **Method:** `POST`
 - **Request Body:**
   ```json
@@ -28,26 +46,31 @@ Creates a new admin account.
   ```
 - **Success Response:**
   - **Code:** 200
-  - **Content:**
+  - **Content:** 
     ```json
     {
-      "statusCode": 200,
+      "status": 200,
       "data": {},
-      "message": "Admin Signup Successful"
+      "message": "Admin Signup Successful",
+      "success": true
     }
     ```
-- **Error Responses:**
+- **Error Response:**
   - **Code:** 400
-    - **Content:** `{"statusCode": 400, "data": {}, "message": "Admin already exists"}`
-  - **Code:** 400
-    - **Content:** `{"statusCode": 400, "data": {"errors": [...]}, "message": "Invalid Inputs"}`
-  - **Code:** 500
-    - **Content:** `{"statusCode": 500, "data": {}, "message": "An error occurred while creating the admin"}`
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Invalid Inputs",
+      "success": false
+    }
+    ```
 
 ### Admin Login
-Authenticates an admin.
+Authenticates an admin and returns a JWT token.
 
-- **API:** `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1/auth/admin/login`
+- **URL:** `/auth/admin/login`
 - **Method:** `POST`
 - **Request Body:**
   ```json
@@ -58,35 +81,39 @@ Authenticates an admin.
   ```
 - **Success Response:**
   - **Code:** 200
-  - **Content:**
+  - **Content:** 
     ```json
     {
-      "statusCode": 200,
+      "status": 200,
       "data": {
-        "token": "string",
+        "token": "JWT_TOKEN",
         "admin": {
-          "id": "string",
+          "id": "number",
           "name": "string",
-          "email": "string",
-          "username": "string"
+          "username": "string",
+          "email": "string"
         }
       },
-      "message": "Admin Login Successful"
+      "message": "Admin Login Successful",
+      "success": true
     }
     ```
-  - **Sets Cookie:** `jwt` (httpOnly, secure, sameSite: strict)
-- **Error Responses:**
-  - **Code:** 404
-    - **Content:** `{"statusCode": 404, "data": {}, "message": "Admin not found"}`
-  - **Code:** 401
-    - **Content:** `{"statusCode": 401, "data": {}, "message": "Invalid Credentials"}`
-
-## Participant Endpoints
+- **Error Response:**
+  - **Code:** 400 or 404
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Invalid Credentials",
+      "success": false
+    }
+    ```
 
 ### Participant Signup
 Creates a new participant account.
 
-- **API:** `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1/auth/participant/signup`
+- **URL:** `/auth/participant/signup`
 - **Method:** `POST`
 - **Request Body:**
   ```json
@@ -99,31 +126,38 @@ Creates a new participant account.
   ```
 - **Success Response:**
   - **Code:** 200
-  - **Content:**
+  - **Content:** 
     ```json
     {
-      "statusCode": 200,
+      "status": 200,
       "data": {
         "participant": {
-          "id": "string",
+          "id": "number",
           "name": "string",
           "email": "string",
           "username": "string"
         }
       },
-      "message": "Participant Signup Successful"
+      "message": "Participant Signup Successful",
+      "success": true
     }
     ```
-- **Error Responses:**
+- **Error Response:**
   - **Code:** 400
-    - **Content:** `{"statusCode": 400, "data": {}, "message": "Participant already exists"}`
-  - **Code:** 400
-    - **Content:** `{"statusCode": 400, "data": {"errors": [...]}, "message": "Invalid Inputs"}`
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Invalid Inputs",
+      "success": false
+    }
+    ```
 
 ### Participant Login
-Authenticates a participant.
+Authenticates a participant and returns a JWT token.
 
-- **API:** `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1/auth/participant/login`
+- **URL:** `/auth/participant/login`
 - **Method:** `POST`
 - **Request Body:**
   ```json
@@ -134,55 +168,300 @@ Authenticates a participant.
   ```
 - **Success Response:**
   - **Code:** 200
-  - **Content:**
+  - **Content:** 
     ```json
     {
-      "statusCode": 200,
+      "status": 200,
       "data": {
-        "token": "string",
+        "token": "JWT_TOKEN",
         "participant": {
-          "id": "string",
+          "id": "number",
           "name": "string",
-          "email": "string",
-          "username": "string"
+          "username": "string",
+          "email": "string"
         }
       },
-      "message": "Login Successful"
+      "message": "Login Successful",
+      "success": true
     }
     ```
-  - **Sets Cookie:** `jwt` (httpOnly, secure, sameSite: strict)
-- **Error Responses:**
-  - **Code:** 404
-    - **Content:** `{"statusCode": 404, "data": {}, "message": "Participant not found"}`
-  - **Code:** 401
-    - **Content:** `{"statusCode": 401, "data": {}, "message": "Invalid Credentials"}`
-
-## Common Endpoints
+- **Error Response:**
+  - **Code:** 400 or 404
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Invalid Credentials",
+      "success": false
+    }
+    ```
 
 ### Logout
 Logs out the current user (admin or participant).
 
-- **API:** `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1/auth/logout`
+- **URL:** `/auth/logout`
 - **Method:** `POST`
-- **Authentication Required:** Yes (JWT token in cookie)
+- **Headers:** 
+  - `Authorization: Bearer JWT_TOKEN`
 - **Success Response:**
   - **Code:** 200
-  - **Content:**
+  - **Content:** 
     ```json
     {
-      "statusCode": 200,
+      "status": 200,
       "data": {},
-      "message": "Participant logout Successful"
+      "message": "Logout Successful",
+      "success": true
     }
     ```
-  - **Clears Cookie:** `jwt`
+
+## Event Management
+
+### Create Event
+Creates a new event (admin only).
+
+- **URL:** `/admin/event/create`
+- **Method:** `POST`
+- **Headers:** 
+  - `Authorization: Bearer JWT_TOKEN`
+- **Request Body:**
+  ```json
+  {
+    "title": "string",
+    "description": "string",
+    "date": "ISO8601 date string",
+    "location": "string",
+    "maxParticipants": "number"
+  }
+  ```
+- **Success Response:**
+  - **Code:** 200
+  - **Content:** 
+    ```json
+    {
+      "status": 200,
+      "data": {
+        "event": {
+          "id": "number",
+          "title": "string",
+          "description": "string",
+          "date": "ISO8601 date string",
+          "location": "string",
+          "maxParticipants": "number",
+          "adminId": "number"
+        }
+      },
+      "message": "Event created successfully",
+      "success": true
+    }
+    ```
 - **Error Response:**
-  - **Code:** 401
-    - **Content:** `{"statusCode": 401, "data": {}, "message": "Please login first"}`
+  - **Code:** 400 or 500
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Invalid Inputs",
+      "success": false
+    }
+    ```
 
-## Authentication Notes
+### Update Event
+Updates an existing event (admin only).
 
-- All successful login responses set a secure HTTP-only cookie containing a JWT token
-- The logout endpoint requires a valid JWT token in the cookie
-- Tokens include the user's role (admin or participant) for role-based access control
-- Password hashing is implemented using a salt for additional security
+- **URL:** `/admin/event/update/:id`
+- **Method:** `PUT`
+- **Headers:** 
+  - `Authorization: Bearer JWT_TOKEN`
+- **Request Body:**
+  ```json
+  {
+    "title": "string",
+    "description": "string",
+    "date": "ISO8601 date string",
+    "location": "string",
+    "maxParticipants": "number"
+  }
+  ```
+- **Success Response:**
+  - **Code:** 200
+  - **Content:** 
+    ```json
+    {
+      "status": 200,
+      "data": {
+        "event": {
+          "id": "number",
+          "title": "string",
+          "description": "string",
+          "date": "ISO8601 date string",
+          "location": "string",
+          "maxParticipants": "number",
+          "adminId": "number"
+        }
+      },
+      "message": "Event updated successfully",
+      "success": true
+    }
+    ```
+- **Error Response:**
+  - **Code:** 400, 403, or 404
+  - **Content:** 
+    ```json
+    {
+      "status": 404,
+      "data": {},
+      "message": "Event not found",
+      "success": false
+    }
+    ```
+
+## Event Participation
+
+### Join Event
+Registers a participant for an event.
+
+- **URL:** `/participant/event/register/:id`
+- **Method:** `POST`
+- **Headers:** 
+  - `Authorization: Bearer JWT_TOKEN`
+- **Success Response:**
+  - **Code:** 200
+  - **Content:** 
+    ```json
+    {
+      "status": 200,
+      "data": {},
+      "message": "Added to the confirmed list.",
+      "success": true
+    }
+    ```
+  OR
+    ```json
+    {
+      "status": 200,
+      "data": {},
+      "message": "Confirmed list is full. Added to the waitlist.",
+      "success": true
+    }
+    ```
+- **Error Response:**
+  - **Code:** 400 or 404
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": {},
+      "message": "You are already registered and in the confirmed list",
+      "success": false
+    }
+    ```
+
+### Cancel Event Registration
+Cancels a participant's registration for an event.
+
+- **URL:** `/participant/event/cancel-registration/:id`
+- **Method:** `POST`
+- **Headers:** 
+  - `Authorization: Bearer JWT_TOKEN`
+- **Success Response:**
+  - **Code:** 200
+  - **Content:** 
+    ```json
+    {
+      "status": 200,
+      "data": {},
+      "message": "Your registration from the confirmed list has been cancelled successfully.",
+      "success": true
+    }
+    ```
+  OR
+    ```json
+    {
+      "status": 200,
+      "data": {},
+      "message": "Your registration from the waitlist has been cancelled successfully",
+      "success": true
+    }
+    ```
+- **Error Response:**
+  - **Code:** 400 or 404
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": {},
+      "message": "You are not registered for this event",
+      "success": false
+    }
+    ```
+
+## Event Information
+
+### Get Confirmed and Waitlist
+Retrieves the confirmed and waitlist for an event.
+
+- **URL:** `/event/getConfirmedAndWaitList/:id`
+- **Method:** `GET`
+- **Headers:** 
+  - `Authorization: Bearer JWT_TOKEN`
+- **Success Response:**
+  - **Code:** 200
+  - **Content:** 
+    ```json
+    {
+      "status": 200,
+      "data": {
+        "confirmedList": [
+          { "participantId": "number" }
+        ],
+        "waitList": [
+          { "participantId": "number" }
+        ]
+      },
+      "message": "Confirmed and Waitlist fetched successfully",
+      "success": true
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404 or 500
+  - **Content:** 
+    ```json
+    {
+      "status": 404,
+      "data": {},
+      "message": "No participants found",
+      "success": false
+    }
+    ```
+
+## Error Handling
+
+All endpoints use a consistent error handling mechanism. Errors are returned with appropriate HTTP status codes and a JSON response body containing details about the error.
+
+Example error response:
+
+```json
+{
+  "status": 400,
+  "data": { 
+    "details": "Specific error details"
+  },
+  "message": "Error message",
+  "success": false
+}
+```
+
+Common error types include:
+- `ApiError`: General API errors (e.g., validation failures, unauthorized access)
+- `UserAuthError`: Authentication-related errors
+- `EventError`: Event-specific errors
+
+## Notes
+
+- All authenticated routes require a valid JWT token in the Authorization header.
+- Dates should be provided and are returned in ISO8601 format.
+- The API uses a PostgreSQL database with Prisma as the ORM.
+- Error handling is consistent across all endpoints, with specific error types for different scenarios.
