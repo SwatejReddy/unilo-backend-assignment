@@ -9,7 +9,7 @@ https://excalidraw.com/#json=guX0UwGn2mw9ONnoPRCka,3UUFOP5Jc4fAxe11WufYvA
 Key Points of API design:
 
 - Implemented RBAC (Role based access control for Admin and Participant routes) with authentication middlewares.
-- Used JWT for authentication and authorization from scratch.
+- Implemented JWT based authentication and authorization from scratch.
 - Implemented password hashing along with salting for increased security.
 - Implemented soft deletes instead of removing records directly from the database for future auditing and analytics purposes.
 - Created a centralised error handling system with custom error classes and a handler.
