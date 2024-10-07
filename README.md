@@ -19,6 +19,7 @@ Key Points of API design:
 - Used HonoJS with NodeJS to make it compatible to deploy on Cloudflare workers.
 - Hosted PostgreSQL database on Neon.tech in a serverless fashion.
 - Used Prisma ORM for schema, querying and Prisma Accelerate for connection pooling as we are dealing with a serverless architecture here.
+- Used HTTP only cookies to store JWT token over local storage for extra security.
 
 # API Documentation
 ## (Database & backend are hosted & are live - Do test the APIs in postman)
