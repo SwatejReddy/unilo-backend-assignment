@@ -130,11 +130,10 @@ export const cancelEventRegistration = async (c: Context) => {
                             participantId: waitlist.participantId
                         }
                     });
-
-                    await prisma.waitList.update({
-                        where: { id: waitlist.id },
-                        data: { cancelled: true }
-                    });
+                    // delete the row of the user from the waitlist
+                    await prisma.waitList.deleteMany({
+                        where: { eventId: Number(eventId), participantId: waitlist.participantId }
+                    })
                 }
             });
 

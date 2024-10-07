@@ -1,4 +1,4 @@
-name = "unilo-event-manager"
+name = "unolo-event-manager"
 main = "src/index.ts"
 compatibility_date = "2024-10-03"
 compatibility_flags = [ "nodejs_compat" ]

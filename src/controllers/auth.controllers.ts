@@ -74,7 +74,7 @@ export const adminLogin = async (c: Context) => {
         const admin = await prisma.admin.findFirst({
             where: {
                 username: dataIsValid.data.username
-            }
+            },
         })
 
         if (!admin) throw UserAuthError.userNotFound('admin');
@@ -91,7 +91,14 @@ export const adminLogin = async (c: Context) => {
             sameSite: 'strict'
         });
 
-        return c.json(new ApiResponse(200, { token, admin }, "Admin Login Successful"), 200);
+        return c.json(new ApiResponse(200, {
+            token, admin: {
+                id: admin.id,
+                name: admin.name,
+                username: admin.username,
+                email: admin.email
+            }
+        }, "Admin Login Successful"), 200);
 
     } catch (error: any) {
         return handleError(c, error);
@@ -181,7 +188,15 @@ export const participantLogin = async (c: Context) => {
             sameSite: 'strict'
         });
 
-        return c.json(new ApiResponse(200, { token, participant }, "Login Successful"), 200);
+        return c.json(new ApiResponse(200, {
+            token, participant: {
+                id: participant.id,
+                name: participant.name,
+                username: participant.username,
+                email: participant.email
+            }
+        }, "Login Successful"), 200);
+
     } catch (error: any) {
         return handleError(c, error);
     }
