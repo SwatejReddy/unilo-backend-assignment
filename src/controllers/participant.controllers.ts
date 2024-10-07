@@ -105,7 +105,8 @@ export const cancelEventRegistration = async (c: Context) => {
                 await prisma.confirmedList.updateMany({
                     where: {
                         eventId: Number(eventId),
-                        participantId: Number(participantId)
+                        participantId: Number(participantId),
+                        cancelled: false
                     },
                     data: { cancelled: true }
                 });
@@ -134,6 +135,11 @@ export const cancelEventRegistration = async (c: Context) => {
                     await prisma.waitList.deleteMany({
                         where: { eventId: Number(eventId), participantId: waitlist.participantId }
                     })
+                    // increment the confirmed count in the event
+                    await prisma.event.update({
+                        where: { id: Number(eventId) },
+                        data: { confirmedCount: { increment: 1 } }
+                    });
                 }
             });
 

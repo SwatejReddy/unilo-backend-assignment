@@ -67,6 +67,18 @@ Creates a new admin account.
     }
     ```
 
+  - **Code:** 400
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Admin already exists",
+      "success": false
+    }
+    ```
+
+
 ### Admin Login
 Authenticates an admin and returns a JWT token.
 
@@ -99,7 +111,7 @@ Authenticates an admin and returns a JWT token.
     }
     ```
 - **Error Response:**
-  - **Code:** 400 or 404
+  - **Code:** 400
   - **Content:** 
     ```json
     {
@@ -109,6 +121,18 @@ Authenticates an admin and returns a JWT token.
       "success": false
     }
     ```
+
+  - **Code:** 404
+  - **Content:** 
+    ```json
+    {
+      "status": 404,
+      "data": { "details": "Error details" },
+      "message": "Admin not found.",
+      "success": false
+    }
+    ```
+
 
 ### Participant Signup
 Creates a new participant account.
@@ -154,6 +178,17 @@ Creates a new participant account.
     }
     ```
 
+  - **Code:** 400
+  - **Content:** 
+    ```json
+    {
+      "status": 400,
+      "data": { "details": "Error details" },
+      "message": "Participant already exists.",
+      "success": false
+    }
+    ```
+
 ### Participant Login
 Authenticates a participant and returns a JWT token.
 
@@ -186,13 +221,24 @@ Authenticates a participant and returns a JWT token.
     }
     ```
 - **Error Response:**
-  - **Code:** 400 or 404
+  - **Code:** 400
   - **Content:** 
     ```json
     {
       "status": 400,
       "data": { "details": "Error details" },
       "message": "Invalid Credentials",
+      "success": false
+    }
+    ```
+
+  - **Code:** 404
+  - **Content:** 
+    ```json
+    {
+      "status": 404,
+      "data": { "details": "Error details" },
+      "message": "Participant not found",
       "success": false
     }
     ```
@@ -215,6 +261,21 @@ Logs out the current user (admin or participant).
       "success": true
     }
     ```
+
+- **Error Response:**
+  - **Code:** 401
+  - **Content:** 
+    ```json
+    {
+      "status": 401,
+      "data": {
+        "message": "Unauthorized"
+      },
+      "message": "Please login first",
+      "success": true
+    }
+    ```
+
 
 ## Event Management
 
