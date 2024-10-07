@@ -13,7 +13,7 @@ Base URL: `https://unolo-event-manager.swatejreddy17.workers.dev/api/v1`
 # Event Management API Documentation
 
 ## Postman API collection link:
-https://www.postman.com/security-cosmonaut-86700114/assignment-workspace/overview
+https://www.postman.com/security-cosmonaut-86700114/assignment-workspace/collection/kfbz5vs/unolo-assignment
 
 ## Table of Contents
 1. [Authentication](#authentication)
