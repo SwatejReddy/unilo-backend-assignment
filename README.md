@@ -5,12 +5,15 @@
 ### Diagram Link: 
 https://excalidraw.com/#json=guX0UwGn2mw9ONnoPRCka,3UUFOP5Jc4fAxe11WufYvA
 
-# Authentication API Documentation
+# API Documentation
 ## (Database & backend are hosted & are live - Do test the APIs in postman)
 
-Base URL: `https://unilo-event-manager.swatejreddy17.workers.dev/api/v1`
+Base URL: `https://unolo-event-manager.swatejreddy17.workers.dev/api/v1`
 
 # Event Management API Documentation
+
+## Postman API collection link:
+https://www.postman.com/security-cosmonaut-86700114/assignment-workspace/overview
 
 ## Table of Contents
 1. [Authentication](#authentication)
