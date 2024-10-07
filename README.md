@@ -5,6 +5,21 @@
 ### Diagram Link: 
 https://excalidraw.com/#json=guX0UwGn2mw9ONnoPRCka,3UUFOP5Jc4fAxe11WufYvA
 
+# Key Points
+Key Points of API design:
+
+- Implemented RBAC (Role based access control for Admin and Participant routes) with authentication middlewares.
+- Used JWT for authentication and authorization from scratch.
+- Implemented password hashing along with salting for increased security.
+- Implemented soft deletes instead of removing records directly from the database for future auditing and analytics purposes.
+- Created a centralised error handling system with custom error classes and a handler.
+- Implemented ApiResponse class to make the response structure consistent across all routes.
+- Used Zod schemas for data validation.
+- Used Typescript entirely to ensure type safety.
+- Used HonoJS with NodeJS to make it compatible to deploy on Cloudflare workers.
+- Hosted PostgreSQL database on Neon.tech in a serverless fashion.
+- Used Prisma ORM for schema, querying and Prisma Accelerate for connection pooling as we are dealing with a serverless architecture here.
+
 # API Documentation
 ## (Database & backend are hosted & are live - Do test the APIs in postman)
 
